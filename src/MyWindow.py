@@ -9,6 +9,7 @@ import random
 
 from src.functions import *
 from src.TableModel import *
+from src.simulation import *
 
 
 class MyWindow(QWidget):
@@ -38,8 +39,8 @@ class MyWindow(QWidget):
         self.button.setText('محاسبه')
         self.button.setFont(QtGui.QFont('Vazir', 11,))
         self.button.setEnabled(False)
-        self.button.clicked.connect(lambda: functions.toCsv(
-            self.df_1, self.df_2, self.randomDf_1, self.randomDf_2))
+        self.button.clicked.connect(
+            lambda: simulation.mainCalculation(self.randomData_1, self.randomData_2, self.numOfCustomersTextbox.value(), self.numOfServersTextbox.value()))
 
         mainLayout.addWidget(self.warrningLabel)
         mainLayout.addWidget(self.tabs)
@@ -50,25 +51,25 @@ class MyWindow(QWidget):
         getBaseInfo = QWidget()
         layout = QVBoxLayout()
 
-        # Create number of service textbox
+        # Number of rows of service function
         layout.serviceTextbox = QtWidgets.QSpinBox(self)
         layout.serviceTextbox.setRange(1, 100)
         layout.serviceTextbox.setValue(5)
 
-        # Create number of customer textbox
+        # Number of rows of customer login function
         layout.customerTextbox = QtWidgets.QSpinBox(self)
         layout.customerTextbox.setRange(1, 100)
         layout.customerTextbox.setValue(5)
 
-        # Create number of service providers textbox
-        layout.serviceProvidersTextbox = QtWidgets.QSpinBox(self)
-        layout.serviceProvidersTextbox.setRange(1, 50)
-        layout.serviceProvidersTextbox.setValue(3)
+        # Number of servers
+        self.numOfServersTextbox = QtWidgets.QSpinBox(self)
+        self.numOfServersTextbox.setRange(1, 50)
+        self.numOfServersTextbox.setValue(3)
 
-        # Create number of cunstomers textbox
-        layout.numberOfCustomersTextbox = QtWidgets.QSpinBox(self)
-        layout.numberOfCustomersTextbox.setRange(1, 2147483647)
-        layout.numberOfCustomersTextbox.setValue(200)
+        # Number of customers
+        self.numOfCustomersTextbox = QtWidgets.QSpinBox(self)
+        self.numOfCustomersTextbox.setRange(1, 2147483647)
+        self.numOfCustomersTextbox.setValue(400)
 
         # create labels
         layout.label_1 = QtWidgets.QLabel("تعداد سطرهای تابع زمان خدمت دهی")
@@ -85,7 +86,7 @@ class MyWindow(QWidget):
         self.tbtn.setText('تایید اطلاعات')
         self.tbtn.setFont(QtGui.QFont('Vazir', 11))
         self.tbtn.clicked.connect(lambda: functions.createTable(
-            self, self.tabs, layout.serviceTextbox.value(), layout.customerTextbox.value(), layout.numberOfCustomersTextbox.value()))
+            self, self.tabs, layout.serviceTextbox.value(), layout.customerTextbox.value(), self.numOfCustomersTextbox.value()))
 
         # Create a QGridLayout instance
         GridLayout = QGridLayout()
@@ -94,8 +95,8 @@ class MyWindow(QWidget):
         # Add widgets to the layout
         GridLayout.addWidget(layout.serviceTextbox, 0, 0)
         GridLayout.addWidget(layout.customerTextbox, 1, 0)
-        GridLayout.addWidget(layout.serviceProvidersTextbox, 2, 0)
-        GridLayout.addWidget(layout.numberOfCustomersTextbox, 3, 0)
+        GridLayout.addWidget(self.numOfServersTextbox, 2, 0)
+        GridLayout.addWidget(self.numOfCustomersTextbox, 3, 0)
 
         GridLayout.addWidget(layout.label_1, 0, 1, 1, 3)
         GridLayout.addWidget(layout.label_2, 1, 1, 1, 3)
@@ -114,6 +115,7 @@ class MyWindow(QWidget):
         getTables = QWidget()
         layout2 = QGridLayout()
 
+        # Arrays to store probabilities and convert them to data-frames
         self.data_1 = [[0]*2]*m
         self.data_2 = [[0]*2]*n
         self.df_1 = pd.DataFrame(self.data_1, columns=[
@@ -128,9 +130,9 @@ class MyWindow(QWidget):
         header_2 = self.table_2.horizontalHeader()
         header_2.setSectionResizeMode(QHeaderView.Stretch)
 
+        # Build a Object from a NormalTableModel class
         self.model_1 = NormalTableModel(self.df_1)
         self.table_1.setModel(self.model_1)
-
         self.model_2 = NormalTableModel(self.df_2)
         self.table_2.setModel(self.model_2)
 
@@ -160,22 +162,28 @@ class MyWindow(QWidget):
         getRandomTable = QWidget()
         layout3 = QGridLayout()
 
+        # Arrays to store customer arrival times and service times and convert them to data-frames
         self.randomData_1 = []
         self.randomData_2 = []
-        functions.createRandomList(self.randomData_1, m)
+        functions.createRandomList(self.randomData_1, p)
         functions.createRandomList(self.randomData_2, p)
 
-        for i in range(m):
+        # Calculate time from random numbers and probability tables
+        for i in range(p):
             for j in range(m):
                 if float(self.randomData_1[i][0]) <= float(self.df_1.iat[j, 1]):
                     self.randomData_1[i][1] = j+1
                     break
 
         for i in range(p):
-            for j in range(n):
-                if float(self.randomData_2[i][0]) <= float(self.df_2.iat[j, 1]):
-                    self.randomData_2[i][1] = j+1
-                    break
+            if i == 0:
+                self.randomData_2[i][0] = 0
+                self.randomData_2[i][1] = 0
+            else:
+                for j in range(n):
+                    if float(self.randomData_2[i][0]) <= float(self.df_2.iat[j, 1]):
+                        self.randomData_2[i][1] = j+1
+                        break
 
         self.randomDf_1 = pd.DataFrame(self.randomData_1, columns=[
             'عدد رندوم', 'مدت خدمت دهی'])
@@ -189,9 +197,9 @@ class MyWindow(QWidget):
         header_2 = self.randomTable_2.horizontalHeader()
         header_2.setSectionResizeMode(QHeaderView.Stretch)
 
+        # Build a Object from a RandomTableModel class
         self.randomModel_1 = RandomTableModel(self.randomDf_1)
         self.randomTable_1.setModel(self.randomModel_1)
-
         self.randomModel_2 = RandomTableModel(self.randomDf_2)
         self.randomTable_2.setModel(self.randomModel_2)
 

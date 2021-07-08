@@ -5,10 +5,11 @@ import sys
 import qtmodern.styles
 import qtmodern.windows
 from src.MyWindow import MyWindow
+from src.bcolors import bcolors
 
 
 def window():
-    print('Program is Start...')
+    print(f'{bcolors.OKBLUE}Program is Start...{bcolors.RESET}')
     app = QApplication(sys.argv)
     window = MyWindow()
 

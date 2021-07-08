@@ -58,7 +58,6 @@ class NormalTableModel(QAbstractTableModel):
         
 
 
-
 class RandomTableModel(QAbstractTableModel):
     def __init__(self, data):
         QAbstractTableModel.__init__(self)

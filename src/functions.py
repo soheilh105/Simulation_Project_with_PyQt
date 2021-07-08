@@ -5,6 +5,7 @@ import pandas as pd
 from decimal import Decimal
 import os
 import random
+from src.bcolors import bcolors
 
 
 class functions():
@@ -34,11 +35,13 @@ class functions():
         self.button.setEnabled(True)
         tabs.addTab(self.getRandomTable(m, n, p), "اعداد رندوم")
         tabs.setCurrentIndex(2)
+        print('Random numbers were generated')
 
-    def toCsv(data1, data2, data3, data4):
-        result = pd.concat([data1, data2, data3, data4], axis=1)
-        path = os.path.abspath(os.getcwd()) + "/file.csv"
-        result.to_csv(path, index=False, encoding='utf-8-sig')
+    def toCsv(data):
+        # result = pd.concat([data1, data2, data3, data4], axis=1)
+        path = os.path.abspath(os.getcwd()) + "/result.csv"
+        data.to_csv(path, index=False, encoding='utf-8-sig')
+        print(f'{bcolors.OKBLUE}result.csv file created ......... {path}{bcolors.RESET}')
 
     def is_number(string):
         try:
@@ -54,19 +57,16 @@ class functions():
 
     def setWarrningLabel(self):
         if self.tabs.currentIndex() == 0:
-            print('0')
             self.warrningLabel.setText(
                 'ابتدا اطلاعات زیر را کامل کرده و سپس بر روی «تایید اطلاعات» کلیک کنید. درصورتی که اطلاعات را تغییر دادی دوباره بر روی «تایید اطلاعات» کلیک کنید.')
             self.warrningLabel.setWordWrap(True)
             self.warrningLabel.setStyleSheet("font-weight: bold;")
         elif self.tabs.currentIndex() == 1:
-            print('1')
             self.warrningLabel.setText(
                 'در این مرحله ستون اول جداول زیر را با اعداد موردنظر کامل کرده و سپس بر روی «تولید اعداد» کلیک کنید.')
             self.warrningLabel.setWordWrap(True)
             self.warrningLabel.setStyleSheet("font-weight: bold;")
         elif self.tabs.currentIndex() == 2:
-            print('2')
             self.warrningLabel.setWordWrap(True)
             self.warrningLabel.setStyleSheet("font-weight: bold;")
             self.warrningLabel.setText(
