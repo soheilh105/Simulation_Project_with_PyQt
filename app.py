@@ -1,8 +1,9 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
-from src.mainWindow import MainWindow
-
+from src.MainWindow import MainWindow
+import qtmodern.styles
+import qtmodern.windows
 
 def window():
     print('Program is Start...')

@@ -4,7 +4,7 @@ import numpy as np
 
 
 class simulation():
-    def mainCalculation(self, serviceData, customerData, p, s):
+    def mainCalculation(self, serviceData, customerData, p, s, progressbar):
         resultArray = np.zeros((p, 10))
         serversEndTime = [0]*s # To store when each servers is working until then
         index = 0  # To store the number of the server that does the work
@@ -33,12 +33,9 @@ class simulation():
                 sumResult[index] += resultArray[i][index+1]
             print(f"Customer {i+1} ... DONE")
 
-            # Add the total line
-            # sumResult = ['مجموع'] + sumResult
-            # print(sumResult)
-            # np.vstack(resultArray, sumResult.insert(0, 'مجموع'))
+            progressbar.setValue((i/p)*100)
 
-
+        progressbar.setValue(100)
         # To get the number of people in the queue
         for i in range(p):
             if resultArray[i][5] != 0:
@@ -53,7 +50,6 @@ class simulation():
         for i in range(s):
             if serversEndTime[i] != simulationEndTime:
                 sumResult[7] += (simulationEndTime-serversEndTime[i])
-        
         return sumResult, numQueue, path, simulationEndTime
 
     def defineServer(serverData, customerLoginTime):

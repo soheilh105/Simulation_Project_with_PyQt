@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
 
@@ -30,8 +30,8 @@ class ResultWindow(QDialog):
         layout.path.setWordWrap(True)
         layout.path.setStyleSheet("font-weight: bold;")
         layout.addWidget(layout.path)
-        titles = ['متوسط مدت انتظار', 'احتمال انتظار در سیستم برای خدمت دهی', 'احتمال بیکاری خدمت دهنده', 'متوسط مدت خدمت دهی','متوسط مدت زمان بین دو ورود', 'متوسط مدت انتظار برای افراد در صف', 'متوسط مدت ماندن مشتری در سیستم', 'امید ریاضی مدت خدمت دهی']
-        results = [0]*8
+        titles = ['متوسط مدت انتظار', 'احتمال انتظار در سیستم برای خدمت دهی', 'احتمال بیکاری خدمت دهنده', 'متوسط مدت خدمت دهی','متوسط مدت زمان بین دو ورود', 'متوسط مدت انتظار برای افراد در صف', 'متوسط مدت ماندن مشتری در سیستم']
+        results = [0]*7
 
         results[0]=sumData[4]/p
         results[1]=q/p
@@ -43,11 +43,10 @@ class ResultWindow(QDialog):
         else:
             results[5]=sumData[4]/q
         results[6]=sumData[6]/p
-        results[7]=sumData[0]/p
 
 
         # Add widgets to the layout
-        for i in range(8):
+        for i in range(7):
             layout.addWidget(QtWidgets.QLabel(titles[i]+' = '+str(results[i])))
 
         # Set the layout on the application's window

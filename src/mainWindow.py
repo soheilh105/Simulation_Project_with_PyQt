@@ -1,7 +1,6 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
-import sys
 import numpy as np
 import pandas as pd
 import random
@@ -10,7 +9,7 @@ from threading import Thread
 from src.functions import *
 from src.TableModel import *
 from src.simulation import simulation
-from src.resultWindow import ResultWindow
+from src.ResultWindow import ResultWindow
 
 
 class MainWindow(QWidget):
@@ -23,9 +22,6 @@ class MainWindow(QWidget):
         self.setFixedWidth(750)
         self.setFixedHeight(600)
         self.setWindowTitle("Soheil Hasnai | simulation project")
-
-        # font = QtGui.QFont('Vazir')
-        # self.setFont(font)
         self.setStyleSheet("font-size: 11pt; font-family: 'Vazir';")
 
         # Create a top-level layout
@@ -41,16 +37,21 @@ class MainWindow(QWidget):
             lambda: functions.setWarrningLabel(self))
         self.tabs.addTab(self.getBaseInfo(), "اطلاعات اصلی")
 
+        # Create progress-bar
+        self.pbar = QProgressBar(self)
+        self.pbar.setValue(0)
+
         # create calculate button
         self.button = QtWidgets.QPushButton(self)
         self.button.setText('محاسبه')
         self.button.setFont(QtGui.QFont('Vazir', 11,))
         self.button.setEnabled(False)
         self.button.clicked.connect(lambda: self.mainCalculation(
-            self.randomData_1, self.randomData_2, self.numOfCustomersTextbox.value(), self.numOfServersTextbox.value()))
+            self.randomData_1, self.randomData_2, self.numOfCustomersTextbox.value(), self.numOfServersTextbox.value(), self.pbar))
 
         mainLayout.addWidget(self.warrningLabel)
         mainLayout.addWidget(self.tabs)
+        mainLayout.addWidget(self.pbar)
         mainLayout.addWidget(self.button)
 
 # ------------------------------------------------------------------
@@ -70,7 +71,7 @@ class MainWindow(QWidget):
 
         # Number of servers
         self.numOfServersTextbox = QtWidgets.QSpinBox(self)
-        self.numOfServersTextbox.setRange(1, 50)
+        self.numOfServersTextbox.setRange(1, 9999999)
         self.numOfServersTextbox.setValue(3)
 
         # Number of customers
@@ -147,8 +148,7 @@ class MainWindow(QWidget):
         self.rbtn.setText('تولید اعداد')
         self.rbtn.setFont(QtGui.QFont('Vazir', 11))
 
-        self.rbtn.clicked.connect(lambda: functions.createRandom(
-            self, self.tabs, m, n, p, self.df_1, self.df_2))
+        self.rbtn.clicked.connect(lambda: functions.createRandom(self, self.tabs, m, n, p))
 
         self.label_1 = QtWidgets.QLabel('جدول احتمالات خدمت دهی')
         self.label_2 = QtWidgets.QLabel('جدول احتمالات مدت بین دو ورود')
@@ -173,8 +173,8 @@ class MainWindow(QWidget):
         # Arrays to store customer arrival times and service times and convert them to data-frames
         self.randomData_1 = []
         self.randomData_2 = []
-        Thread(target=functions.createRandomList(self.randomData_1, p)).start()
-        Thread(target=functions.createRandomList(self.randomData_2, p)).start()
+        Thread(target=functions.createRandomList(self.randomData_1, p, self.pbar, 1)).start()
+        Thread(target=functions.createRandomList(self.randomData_2, p, self.pbar, 2)).start()
 
         # Calculate time from random numbers and probability tables
         for i in range(p):
@@ -226,9 +226,9 @@ class MainWindow(QWidget):
         getRandomTable.setLayout(layout3)
         return getRandomTable
 
-    def mainCalculation(self, data1, data2, data3, data4):
+    def mainCalculation(self, data1, data2, data3, data4, progressbar):
         result, numQueue, path, simuEndTime = simulation.mainCalculation(
-            self, data1, data2, data3, data4)
+            self, data1, data2, data3, data4, progressbar)
         resultDialog = ResultWindow(result, data3, numQueue, path, simuEndTime)
         resultDialog.show()
         resultDialog.exec_()

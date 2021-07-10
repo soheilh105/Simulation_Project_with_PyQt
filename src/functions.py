@@ -1,8 +1,6 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+import PyQt5
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-import pandas as pd
-from decimal import Decimal
 import os
 import random
 
@@ -22,7 +20,7 @@ class functions():
         tabs.addTab(self.getTables(m, n, p), "جدول احتمالات")
         tabs.setCurrentIndex(1)
 
-    def createRandom(self, tabs, m, n, p, df1, df2):
+    def createRandom(self, tabs, m, n, p):
         if self.df_1.iloc[m-1, 1] != 1 or self.df_2.iloc[n-1, 1] != 1:
             functions.showDialog('Error', 'مجموع احتمالات باید برابر 1 باشد')
         else:
@@ -31,6 +29,20 @@ class functions():
             tabs.addTab(self.getRandomTable(m, n, p), "اعداد رندوم")
             tabs.setCurrentIndex(2)
             print('Random numbers were generated...')
+
+    def createRandomList(list, listLength, pbar, num):
+        for i in range(listLength):
+            rn = round(random.random(), 3)
+            list.append([rn, 0])
+            print(f"RandomNumber {i} id created")
+            if num == 1:
+                pbar.setValue((i/listLength)*50)
+            else:
+                pbar.setValue(50+(i/listLength)*50)
+        if num == 1:
+            pbar.setValue(50)
+        else:
+            pbar.setValue(100)
 
     def toCsv(data):
         # result = pd.concat([data1, data2, data3, data4], axis=1)
@@ -45,12 +57,6 @@ class functions():
             return True
         except ValueError:
             return False
-
-    def createRandomList(list, listLength):
-        for i in range(listLength):
-            rn = round(random.random(), 2)
-            list.append([rn, 0])
-            print(f"RandomNumber {i} id created")
 
     def setWarrningLabel(self):
         if self.tabs.currentIndex() == 0:
@@ -67,4 +73,4 @@ class functions():
             self.warrningLabel.setWordWrap(True)
             self.warrningLabel.setStyleSheet("font-weight: bold;")
             self.warrningLabel.setText(
-                'در این مرحله جداول اعداد رندوم و اعداد زمان بین ورود ها و زمان خدمت دهی به دست آمده برای انجام محاسبات بر روی «محاسبه» کلیک کنید.')
+                'در این مرحله جداول اعداد رندوم و زمان بین ورودها و زمان خدمت دهی به دست آمده، برای انجام محاسبات نهایی بر روی «محاسبه» کلیک کنید.')

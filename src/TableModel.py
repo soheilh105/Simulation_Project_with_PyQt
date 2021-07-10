@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+import PyQt5
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import pandas as pd
@@ -27,9 +27,9 @@ class NormalTableModel(QAbstractTableModel):
         if role == Qt.EditRole:
             if not functions.is_number(value):
                 functions.showDialog(
-                    'error', 'امکان وارد کردن حروف وجود ندارد.')
+                    'Error', 'امکان وارد کردن حروف وجود ندارد.')
             elif float(value) > 1:
-                functions.showDialog('error', 'احتمال باید بین 0 و 1 باشد.')
+                functions.showDialog('Error', 'احتمال باید بین 0 و 1 باشد.')
             elif index.column() == 0:
                 self._data.iloc[index.row(), index.column()] = Decimal(value)
 
