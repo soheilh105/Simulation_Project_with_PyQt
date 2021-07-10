@@ -34,12 +34,11 @@ class NormalTableModel(QAbstractTableModel):
                 self._data.iloc[index.row(), index.column()] = Decimal(value)
 
                 for i in range(0, len(self._data)):
-                    if i == 0 and self._data.iloc[i, 0] != 0:
+                    if i == 0:
                         self._data.iloc[i, 1] = self._data.iloc[i, 0]
 
-                    elif self._data.iloc[i, 0] != 0:
-                        self._data.iloc[i, 1] = self._data.iloc[i,
-                                                                0] + self._data.iloc[i-1, 1]
+                    else:
+                        self._data.iloc[i, 1] = self._data.iloc[i,0] + self._data.iloc[i-1, 1]
                 return True
         return False
 

@@ -5,7 +5,6 @@ import pandas as pd
 from decimal import Decimal
 import os
 import random
-from src.bcolors import bcolors
 
 
 class functions():
@@ -17,31 +16,28 @@ class functions():
         msgBox.setStandardButtons(QMessageBox.Ok)
         returnValue = msgBox.exec()
 
-    def calculate_1(var_1, var_2, var_3, var_4):
-        if(var_1 == 0 or var_2 == 0 or var_3 == 0 or var_4 == 0):
-            functions.showDialog(
-                "Error", "مقدارهای وارد شده باید مخالف 0 باشند")
-        else:
-            return 'sucsuss'
-
-    def createTable(self, tabs, m, n, p):
+    def createProbTable(self, tabs, m, n, p):
         tabs.removeTab(2)
         tabs.removeTab(1)
-        tabs.addTab(self.getTables(m, n, p), "جدول ها")
+        tabs.addTab(self.getTables(m, n, p), "جدول احتمالات")
         tabs.setCurrentIndex(1)
 
-    def createRandom(self, tabs, m, n, p):
-        tabs.removeTab(2)
-        self.button.setEnabled(True)
-        tabs.addTab(self.getRandomTable(m, n, p), "اعداد رندوم")
-        tabs.setCurrentIndex(2)
-        print('Random numbers were generated')
+    def createRandom(self, tabs, m, n, p, df1, df2):
+        if self.df_1.iloc[m-1, 1] != 1 or self.df_2.iloc[n-1, 1] != 1:
+            functions.showDialog('Error', 'مجموع احتمالات باید برابر 1 باشد')
+        else:
+            tabs.removeTab(2)
+            self.button.setEnabled(True)
+            tabs.addTab(self.getRandomTable(m, n, p), "اعداد رندوم")
+            tabs.setCurrentIndex(2)
+            print('Random numbers were generated...')
 
     def toCsv(data):
         # result = pd.concat([data1, data2, data3, data4], axis=1)
         path = os.path.abspath(os.getcwd()) + "/result.csv"
         data.to_csv(path, index=False, encoding='utf-8-sig')
-        print(f'{bcolors.OKBLUE}result.csv file created ......... {path}{bcolors.RESET}')
+        print(f'result.csv file created ......... {path}')
+        return path
 
     def is_number(string):
         try:
@@ -52,13 +48,14 @@ class functions():
 
     def createRandomList(list, listLength):
         for i in range(listLength):
-            rn = round(random.random(), 3)
+            rn = round(random.random(), 2)
             list.append([rn, 0])
+            print(f"RandomNumber {i} id created")
 
     def setWarrningLabel(self):
         if self.tabs.currentIndex() == 0:
             self.warrningLabel.setText(
-                'ابتدا اطلاعات زیر را کامل کرده و سپس بر روی «تایید اطلاعات» کلیک کنید. درصورتی که اطلاعات را تغییر دادی دوباره بر روی «تایید اطلاعات» کلیک کنید.')
+                'ابتدا اطلاعات زیر را کامل کرده و سپس بر روی «تایید اطلاعات» کلیک کنید. درصورت تغییر دادن دوباره اطلاعات، دوباره بر روی «تایید اطلاعات» کلیک کنید.')
             self.warrningLabel.setWordWrap(True)
             self.warrningLabel.setStyleSheet("font-weight: bold;")
         elif self.tabs.currentIndex() == 1:

@@ -1,23 +1,23 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
-
-import qtmodern.styles
-import qtmodern.windows
-from src.MyWindow import MyWindow
-from src.bcolors import bcolors
+from src.mainWindow import MainWindow
 
 
 def window():
-    print(f'{bcolors.OKBLUE}Program is Start...{bcolors.RESET}')
+    print('Program is Start...')
     app = QApplication(sys.argv)
-    window = MyWindow()
-
+    
+    dir_ = QtCore.QDir("fonts")
+    _id = [
+            QtGui.QFontDatabase.addApplicationFont('fonts/Vazir.ttf'),
+            QtGui.QFontDatabase.addApplicationFont('fonts/Vazir-Bold.ttf'),
+        ]
+    
+    window = MainWindow()
     app.setStyle("Fusion")
-    # qtmodern.styles.dark(app)
-    # editedWindow = qtmodern.windows.ModernWindow(window)
-
     window.show()
     sys.exit(app.exec_())
+
 
 window()
